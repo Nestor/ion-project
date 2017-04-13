@@ -1135,6 +1135,7 @@ command /iteminfo [<item=%tool of player%>]:
 	permission: proton.iteminfo
 	permission message: {@em} [proton.itemInfo]
 	usage: /iteminfo (item)
+	aliases: /itemdb
 	description: Displays information of player's held item or specified item
 	trigger:
 		set {_lore} to lore of arg 1
@@ -1143,7 +1144,7 @@ command /iteminfo [<item=%tool of player%>]:
 		set {_name} to name of arg-1
 		if "%{_name}%" is "<none>":
 			set {_name} to "%type of arg 1%"
-		jsonProton("%player%", "{@p} Item Information: ||&a%type of arg-1%||ttp:%{_name}%%nl%%{_lore}%|| &a(ID: %id of arg-1%)")
+		jsonProton("%player%", "{@p} Item Information: ||&a%type of arg-1%||ttp:%{_name}%%nl%%{_lore}%|| &a(ID: %id of arg-1%:%data value arg-1%)")
 command /setlore [<integer>] [<text>]:
 	permission: proton.lore
 	permission message: {@em} [proton.lore]
