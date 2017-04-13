@@ -206,17 +206,6 @@ function jsonProton(to: text, msg: text, color: boolean = true):
             send uncolored {_msg} to {_player}
 function jsonBroadcastProton(msg: text, color: boolean = true):
     jsonProton("@a", {_msg}, {_color})
-command /json [<text>] [<text>]:
-        permission: "is.op"
-        trigger:
-                set {_to} to arg 1
-                set {_msg} to arg 2
-
-                if arg 1 is not set:
-                        set {_to} to "%player%"
-                if arg 2 is not set:
-                        set {_msg} to "This is a json message! &c&oClick here for no reason!||ttp:&lReally, click your mouse!||cmd:/json @a %{_to}% clicked their mouse on json..."
-                jsonProton({_to}, {_msg})
 # json.sk
 # I DO NOT OWN json.sk, I DON'T TAKE ANY CREDIT
 # json.sk BELONGS TO "RezzedUp"
@@ -333,39 +322,15 @@ command /tpall:
 	trigger:
 		set {_loc} to sender's location
 		set {_count} to 0
+		set {_countTotal} to 0
 		set {_total} to number of all players
 		loop all players:
 			teleport loop-player to sender's location
 			add 1 to {_count}
+			add 1 to {_countTotal}
 			if {_count} = 20:
-				send "{@p} Sent 20 people. Next group in {@h}3s{@t}. &8[&e%{_count}%&7/&e%{_total}%&8]"
-				wait 3 seconds
-			if {_count} = 40:
-				send "{@p} Sent 40 people. Next group in {@h}3s{@t}. &8[&e%{_count}%&7/&e%{_total}%&8]"
-				wait 3 seconds
-			if {_count} = 60:
-				send "{@p} Sent 60 people. Next group in {@h}3s{@t}. &8[&e%{_count}%&7/&e%{_total}%&8]"
-				wait 3 seconds
-			if {_count} = 80:
-				send "{@p} Sent 80 people. Next group in {@h}3s{@t}. &8[&e%{_count}%&7/&e%{_total}%&8]"
-				wait 3 seconds
-			if {_count} = 100:
-				send "{@p} Sent 100 people. Next group in {@h}3s{@t}. &8[&e%{_count}%&7/&e%{_total}%&8]"
-				wait 3 seconds
-			if {_count} = 120:
-				send "{@p} Sent 120 people. Next group in {@h}3s{@t}. &8[&e%{_count}%&7/&e%{_total}%&8]"
-				wait 3 seconds
-			if {_count} = 140:
-				send "{@p} Sent 140 people. Next group in {@h}3s{@t}. &8[&e%{_count}%&7/&e%{_total}%&8]"
-				wait 3 seconds
-			if {_count} = 160:
-				send "{@p} Sent 160 people. Next group in {@h}3s{@t}. &8[&e%{_count}%&7/&e%{_total}%&8]"
-				wait 3 seconds
-			if {_count} = 180:
-				send "{@p} Sent 180 people. Next group in {@h}3s{@t}. &8[&e%{_count}%&7/&e%{_total}%&8]"
-				wait 3 seconds
-			if {_count} = 200:
-				send "{@p} Sent 200 people. Next group in {@h}3s{@t}. &8[&e%{_count}%&7/&e%{_total}%&8]"
+				set {_count} to 0
+				send "{@p} Sent %{_countTotal}% people. Next group in {@h}3s{@t}. &8[&e%{_countTotal}%&7/&e%{_total}%&8]"
 				wait 3 seconds
 		delete {_loc}
 		send "{@p} Teleported all players to your location"
@@ -611,7 +576,7 @@ command /gmc [<player=%player%>]:
 		send "{@p} Your gamemode has been updated to {@h}Creative{@t}." to player-arg
 		if arg 1 isn't sender:
 			send "{@p} {@h}%player-arg%{@t}'s gamemode was updated to {@h}Creative{@t}" to sender
-command /gms [<player>]:
+command /gms [<player=%player%>]:
 	permission: proton.gm
 	permission message: {@em}
 	usage: &c/gms (player)
@@ -621,7 +586,7 @@ command /gms [<player>]:
 		send "{@p} Your gamemode has been updated to {@h}Survival{@t}." to player-arg
 		if arg 1 isn't sender:
 			send "{@p} {@h}%player-arg%{@t}'s gamemode was updated to {@h}Survival{@t}" to sender
-command /gma [<player>]:
+command /gma [<player=%player%>]:
 	permission: proton.gm
 	permission message: {@em}
 	usage: &c/gma (player)
@@ -631,7 +596,7 @@ command /gma [<player>]:
 		send "{@p} Your gamemode has been updated to {@h}Adventure{@t}." to player-arg
 		if arg 1 isn't sender:
 			send "{@p} {@h}%player-arg%{@t}'s gamemode was updated to {@h}Adventure{@t}" to sender
-command /gmsp [<player>]:
+command /gmsp [<player=%player%>]:
 	permission: proton.gm
 	permission message: {@em}
 	usage: &c/gmsp (player)
@@ -953,6 +918,10 @@ command /maxhealth [<integer>]:
 on join:
 	if {proton.maxHealth} is set:
 		set event-player's max health to {proton.maxHealth}
+on first join:
+	if {proton.maxHealth} is set:
+		set event-player's max health to {proton.maxHealth}
+		set event-player's health to {proton.maxHealth}
 command /rename [<text>]:
 	permission: proton.rename
 	permission message: {@em}
@@ -962,6 +931,9 @@ command /rename [<text>]:
 		if arg 1 is set:
 			if player's tool is nothing:
 				send "&cYou can't rename nothing!"
+			else if arg 1 is "remove" or "reset":
+				set player's held item's name to ""
+				send "{@p} Reset the name of &n%player's held item%."
 			else:
 				set player's held item's name to "%colored arg-1%"
 				send "{@p} Renamed &n%player's held item%&r to {@h}%colored arg-1%{@t}."
@@ -1165,18 +1137,13 @@ command /iteminfo [<item=%tool of player%>]:
 	usage: /iteminfo (item)
 	description: Displays information of player's held item or specified item
 	trigger:
-		set {_n} to 1
-		loop 6 times:
-			set {_lore.%{_n}%} to line ({_n}) of arg-1's lore
-			add 1 to {_n}
-		set {_n} to 1
-		loop 6 times:
-			if "%{_lore.%{_n}%}%" = "<none>":
-				set {_lore.%{_n}%} to ""
-			add 1 to {_n}
+		set {_lore} to lore of arg 1
+		replace all "||" in {_lore} with "%nl%"
+		replace all "<none>" in {_lore} with ""
 		set {_name} to name of arg-1
-		jsonProton("%player%", "{@p} Item Information: ||&a%arg-1%||ttp:%{_name}%%nl%%{_lore.1}%%nl%%{_lore.2}%%nl%%{_lore.3}%%nl%%{_lore.4}%%nl%%{_lore.5}%%nl%%{_lore.6}%|| &a(ID: %id of arg-1%)")
-		stop
+		if "%{_name}%" is "<none>":
+			set {_name} to "%type of arg 1%"
+		jsonProton("%player%", "{@p} Item Information: ||&a%type of arg-1%||ttp:%{_name}%%nl%%{_lore}%|| &a(ID: %id of arg-1%)")
 command /setlore [<integer>] [<text>]:
 	permission: proton.lore
 	permission message: {@em} [proton.lore]
