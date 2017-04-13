@@ -143,3 +143,13 @@ on chat:
 			broadcast "&f%name of player% {@chatSpacer} {@chatColor}%message%"
 	else:
 		broadcast "&f%name of player% {@chatSpacer} {@chatColor}%message%"
+command /clearchat:
+	permission: neutron.chat
+	permission message: {@em}
+	description: Clears the Chat
+	usage: /neutron help
+	trigger:
+		loop 300 times:
+			broadcast " "
+		broadcast "%{@p}% %sender% cleared the chat!"
+		
