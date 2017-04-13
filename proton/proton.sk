@@ -1144,7 +1144,7 @@ command /iteminfo [<item=%tool of player%>]:
 		set {_name} to name of arg-1
 		if "%{_name}%" is "<none>":
 			set {_name} to "%type of arg 1%"
-		jsonProton("%player%", "{@p} Item Information: ||&a%type of arg-1%||ttp:%{_name}%%nl%%{_lore}%|| &a(ID: %id of arg-1%:%data value arg-1%)")
+		jsonProton("%player%", "{@p} Item Information: ||&a%type of arg-1%||ttp:%{_name}%%nl%%{_lore}%|| &a(ID: %id of arg-1%:%data value of arg-1%)")
 command /setlore [<integer>] [<text>]:
 	permission: proton.lore
 	permission message: {@em} [proton.lore]
@@ -1163,3 +1163,34 @@ command /setlore [<integer>] [<text>]:
 					send "{@p} Removed {@h}Lore Line %arg-1%{@t}."
 			else:
 				send "&cUsage: /setlore [lineNumber] [...]"
+command /broadcast [<text>]:
+	permission: proton.lore
+	permission message: {@em} [proton.broadcast]
+	usage: /broadcast (text)
+	aliases: /alert
+	description: Sends a message to the whole Server
+	trigger:
+		if arg 1 is set:
+			broadcast "&c[ALERT] &7%arg 1%"
+		else:
+			send "&cUsage: /broadcast (text)"
+command /list:
+	permission: proton.list
+	permission message: {@em} [proton.list]
+	usage: /list
+	aliases: /staff
+	description: Displays a list of the online players
+	trigger:
+		loop all players:
+			if loop-player has permission "proton.staff":
+				add "%loop-player%" to {_staff::*}
+			else:
+				add "%loop-player%" to {_players::*}
+		set {_staff} to "%{_staff::*}%"
+		replace all " and " in {_staff} with ", "
+		if {_staff} isn't "<none>":
+			send "{@p} Online Staff: &a%{_staff}%"
+		set {_players} to "%{_players::*}%"
+		replace all " and " in {_players} with ", "
+		if {_players} isn't "<none>":
+			send "{@p} Online Players: &a%{_players}%"
